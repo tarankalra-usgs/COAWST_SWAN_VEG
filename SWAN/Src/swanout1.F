@@ -2917,30 +2917,31 @@
 !
 !     vegetation dissipation
 !
-!      IF (OQPROC(57)) THEN                                                40.61
-!        IF (ITEST.GE.50 .OR. IOUTES .GE. 10) WRITE (PRTEST, 121) 57,
-!     &  VOQR(57), JDSXV
-!        IF (JDSXV.GT.1) THEN                                              40.65
-!           IF (OPTG.NE.5) THEN                                            40.80
-!              CALL SWIPOL(COMPDA(1,JDSXV),OVEXCV(57),XC, YC, MIP, CROSS,  40.86
-!     &                    VOQ(1,VOQR(57)) ,KGRPNT, COMPDA(1,JDP2))
-!           ELSE                                                           40.80
-!              CALL SwanInterpolateOutput ( VOQ(1,VOQR(57)), VOQ(1,1),     40.80
-!     &                                     VOQ(1,2), COMPDA(1,JDSXV),     40.80
-!     &                                     MIP, KVERT, OVEXCV(57) )       40.80
-!           ENDIF                                                          40.80
-!        ELSE
-!           DO IP = 1, MIP                                                 40.65
-!             VOQ(IP,VOQR(57)) = OVEXCV(57)                                40.65
-!           ENDDO                                                          40.65
-!        ENDIF
-!        IF (INRHOG.EQ.1) THEN
-!          DO IP = 1, MIP
-!            F1 = VOQ(IP,VOQR(57))
-!            IF (.NOT.EQREAL(F1,OVEXCV(57))) VOQ(IP,VOQR(57))=F1*RHO*GRAV
-!          END DO
-!        ENDIF
-!      ENDIF
+      IF (OQPROC(172)) THEN                                               40.61
+        IF (ITEST.GE.50 .OR. IOUTES .GE. 10) WRITE (PRTEST, 121) 172,
+     &  VOQR(172), JDSXC
+        IF (JDSXC.GT.1) THEN                                              40.65
+           IF (OPTG.NE.5) THEN                                            40.80
+             CALL SWIPOL(COMPDA(1,JDSXC),OVEXCV(172),XC, YC, MIP, CROSS,  40.86
+     &                    VOQ(1,VOQR(172)) ,KGRPNT, COMPDA(1,JDP2))
+           ELSE                                                           40.80
+              CALL SwanInterpolateOutput ( VOQ(1,VOQR(172)), VOQ(1,1),    40.80
+     &                                     VOQ(1,2), COMPDA(1,JDSXC),     40.80
+     &                                     MIP, KVERT, OVEXCV(172) )      40.80
+           ENDIF                                                          40.80
+        ELSE
+           DO IP = 1, MIP                                                 40.65
+             VOQ(IP,VOQR(172)) = OVEXCV(172)                              40.65
+           ENDDO                                                          40.65
+        ENDIF
+        IF (INRHOG.EQ.1) THEN
+          DO IP = 1, MIP
+            F1 = VOQ(IP,VOQR(172))
+            IF(.NOT.EQREAL(F1,OVEXCV(172)))VOQ(IP,VOQR(172))=F1*RHO*GRAV
+          END DO
+        ENDIF
+      ENDIF
+
 !
 !     turbulent dissipation
 !

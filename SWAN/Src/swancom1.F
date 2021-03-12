@@ -1277,6 +1277,7 @@
           COMPDA(IP,JDSXW) = 0.                                           40.61
           COMPDA(IP,JDSXM) = 0.                                           40.61
           COMPDA(IP,JDSXV) = 0.                                           40.61
+          COMPDA(IP,JDSXC) = 0.                                           40.61
           COMPDA(IP,JDSXI) = 0.                                           41.75
           COMPDA(IP,JDSXT) = 0.                                           40.35
           COMPDA(IP,JDSXL) = 0.                                           40.88
@@ -3364,8 +3365,8 @@
      &                  COMPDA(1,JDSXB)    ,                              40.67 40.61
      &                  COMPDA(1,JDSXS)    ,                              40.67 40.61
      &                  COMPDA(1,JDSXW)    ,                              40.67 40.61
-     &                  COMPDA(1,JDSXV)    ,COMPDA(1,JDSXT)    ,          40.35 40.67 40.61
-     &                  COMPDA(1,JDSXM)    ,                              40.67 40.61
+     &                  COMPDA(1,JDSXV)    ,COMPDA(1,JDSXC)    ,          40.35 40.67 40.61
+     &                  COMPDA(1,JDSXT)    ,COMPDA(1,JDSXM)    ,          40.35 40.67 40.61
      &                  COMPDA(1,JDSXI)    ,                              41.75
      &                  COMPDA(1,JDSXL)    ,                              40.88
      &                  COMPDA(1,JGSXW)    ,COMPDA(1,JGENR)    ,          40.85
@@ -3671,20 +3672,23 @@
       IF (IVEG.EQ.1) THEN                                                 40.55
          WRITE(PRINTF,7006)                                               40.55
  7006    FORMAT(' Vegetation due to Dalrymple (1984)')                    40.55
+      ELSEIF (IVEG.EQ.2) THEN                                             40.55
+         WRITE(PRINTF,7007)                                               40.55
+ 7007    FORMAT(' Vegetation due to Dalrymple (1984)')                    40.55
       ELSE                                                                40.55
          WRITE (PRINTF, *) 'Vegetation is off'                            40.55
       ENDIF                                                               40.55
 !
       IF (ITURBV.EQ.1) THEN                                               40.35
-         WRITE(PRINTF,7007) PTURBV(1), PTURBV(2)                          40.35
- 7007    FORMAT(' Turbulent viscosity  : CTB    ',E12.4,' TBCUR ',E12.4)  40.35
+         WRITE(PRINTF,7008) PTURBV(1), PTURBV(2)                          40.35
+ 7008    FORMAT(' Turbulent viscosity  : CTB    ',E12.4,' TBCUR ',E12.4)  40.35
       ELSE                                                                40.35
          WRITE (PRINTF, *) 'Turbulence is off'                            40.35
       ENDIF                                                               40.35
 !
       IF (IMUD.EQ.1) THEN                                                 40.59
-         WRITE(PRINTF,7008) PMUD(2), PMUD(3)                              40.59
- 7008    FORMAT(' Mud Ng (2000)        : RHOM   ',E12.4,' KINVIS',E12.4)  40.59
+         WRITE(PRINTF,7009) PMUD(2), PMUD(3)                              40.59
+ 7009    FORMAT(' Mud Ng (2000)        : RHOM   ',E12.4,' KINVIS',E12.4)  40.59
       ELSE                                                                40.59
          WRITE (PRINTF, *) 'Fluid mud is off'                             40.59
       ENDIF                                                               40.59
@@ -6890,8 +6894,12 @@
 !      according to Hasselmann et al. (1974), Putnam and Jonsson (1949),
 !      Madsen et al. (1991) or Smith et al. (2011)
 !   ------------------------------------------------------------
-!   If SVEG is on (IVEG > 0 ) then,
+!   If SVEG is on (IVEG == 1 ) then,
 !     Call SVEG  to compute the source term due to vegetation
+!      dissipation according to Dalrymple (1984)
+!   If SVEG_COAWST is on (IVEG == 2 ) then,
+!     Call SVEG_COAWST spatially varying veg to compute the source 
+!      term due to vegetation
 !      dissipation according to Dalrymple (1984)
 !   ------------------------------------------------------------
 !   If STURBV is on (ITURBV > 0 ) then,
@@ -7097,13 +7105,24 @@
 !TIMG      CALL SWTSTO(138)                                                    40.59
 !
 !TIMG      CALL SWTSTA(139)                                                    40.55
-      IF ( IVEG.GE.1 ) THEN                                               40.55
+      IF ( IVEG.EQ.1 ) THEN                                               40.55
 !
 !     *** wave-vegetation interactions ***                                40.55
 !
 !        *** energy dissipation according to Dalrymple (1984)             40.55
 !
          CALL SVEG (DEP2   ,IMATDA   ,ETOT   ,SMEBRK    ,                 40.58 40.55
+     &              KMESPC ,PLVEGT   ,                                    40.58 40.55
+     &              IDCMIN ,IDCMAX   ,ISSTOP ,DISSC1    ,                 40.55
+     &              NPLA2  )                                              40.67 40.61 40.55
+      END IF                                                              40.55
+      IF ( IVEG.EQ.2 ) THEN                                               40.55
+!
+!     *** wave-vegetation interactions ***                                40.55
+!
+!        *** energy dissipation according to Dalrymple (1984)             40.55
+!
+         CALL SVEG_COAWST (DEP2   ,IMATDA   ,ETOT   ,SMEBRK    ,          40.58 40.55
      &              KMESPC ,PLVEGT   ,                                    40.58 40.55
      &              IDCMIN ,IDCMAX   ,ISSTOP ,DISSC1    ,                 40.55
      &              ABRBOT ,KWAVE                       ,                 40.55

@@ -645,7 +645,7 @@
 !#ifdef SWAN_MODEL
 !      PARAMETER (NMOVAR = 75, MOUTPA=50)                                  40.85 40.87 40.64 40.61 40.51 40.21 40.41
 !#else
-      PARAMETER (NMOVAR = 171, MOUTPA=50)                                 41.62 40.35 41.15 40.85 40.87 40.64 40.61 40.51 40.21 40.41
+      PARAMETER (NMOVAR = 172, MOUTPA=50)                                 41.62 40.35 41.15 40.85 40.87 40.64 40.61 40.51 40.21 40.41
 !#endif
 !
 !  7. Local variables
@@ -707,6 +707,7 @@
 !  (55) [ 'DISSU']
 !  (56) [  'DISW']
 !  (57) [  'DISV']
+! (172) [  'DICD']
 !  (58) [    'QP']
 !  (59) [   'BFI']
 !  (60) [  'GENE']
@@ -784,6 +785,7 @@
 !  (55) [ 'Ssurf']
 !  (56) [ 'Swcap']
 !  (57) [  'Sveg']
+! (172) [ 'Cdveg']
 !  (58) [    'Qp']
 !  (59) [   'BFI']
 !  (60) ['Genera']
@@ -861,6 +863,7 @@
 !  (55) [                'Surf breaking dissipation']
 !  (56) [                 'Whitecapping dissipation']
 !  (57) [                   'Vegetation dissipation']
+! (172) [                'Vegetation Cd dissipation']
 !  (58) [                               'Peakedness']
 !  (59) [                      'Benjamin-Feir index']
 !  (60) [                        'Energy generation']
@@ -938,6 +941,7 @@
 !  (55) [  'm2/s'] change to UDL ???, changed to 'W/m2', if INRHOG=1
 !  (56) [  'm2/s'] change to UDL ???, changed to 'W/m2', if INRHOG=1
 !  (57) [  'm2/s'] change to UDL ???, changed to 'W/m2', if INRHOG=1
+! (172) [     ' '] 
 !  (58) [     ' ']
 !  (59) [     ' ']
 !  (60) [  'm2/s'] change to UDL ???, changed to 'W/m2', if INRHOG=1
@@ -1072,6 +1076,7 @@
 !  (55)  [  1]   Ssurf
 !  (56)  [  1]   Swcap
 !  (57)  [  1]   Sveg
+!  (172) [  1]   Cdveg
 !  (58)  [  1]   Qp
 !  (59)  [  1]   BFI
 !  (60)  [  1]   Genera
@@ -1147,6 +1152,7 @@
 !  (55)  [    -9.] Ssurf
 !  (56)  [    -9.] Swcap
 !  (57)  [    -9.] Sveg
+! (172)  [    -9.] Cdveg
 !  (58)  [    -9.] Qp
 !  (59)  [    -9.] BFI
 !  (60)  [    -9.] Genera
@@ -1222,6 +1228,7 @@
 !  (55)  [     0.] Ssurf
 !  (56)  [     0.] Swcap
 !  (57)  [     0.] Sveg
+! (172)  [     0.] Cdveg
 !  (58)  [     0.] Qp
 !  (59)  [     0.] BFI
 !  (60)  [     0.] Genera
@@ -1297,6 +1304,7 @@
 !  (55)  [     0.] Ssurf
 !  (56)  [     0.] Swcap
 !  (57)  [     0.] Sveg
+! (172)  [     0.] Cdveg
 !  (58)  [     0.] Qp
 !  (59)  [     0.] BFI
 !  (60)  [     0.] Genera
@@ -1372,6 +1380,7 @@
 !  (55)  [    0.1] Ssurf
 !  (56)  [    0.1] Swcap
 !  (57)  [    0.1] Sveg
+! (172)  [    0.1] Cdveg
 !  (58)  [     1.] Qp
 !  (59)  [  1000.] BFI
 !  (60)  [    0.1] Genera
@@ -1447,6 +1456,7 @@
 !  (55)  [  1000.] Ssurf
 !  (56)  [  1000.] Swcap
 !  (57)  [  1000.] Sveg
+! (172)  [  1000.] Cdveg
 !  (58)  [     1.] Qp
 !  (59)  [  1000.] BFI
 !  (60)  [  1000.] Genera
@@ -1989,6 +1999,8 @@
 !              set by command TABLE/BLOCK
 ! JDSXV  [  1] vegetation dissipation within array COMPDA
 !              set by command TABLE/BLOCK
+! JDSXC  [  1] vegetation drag coefficient within array COMPDA
+!              set by command TABLE/BLOCK
 ! JDSXT  [  1] turbulent dissipation within array COMPDA
 !              set by command TABLE/BLOCK
 ! JDSXI  [  1] dissipation by sea ice within array COMPDA
@@ -2114,6 +2126,7 @@
 !              =MCMVAR+1, for command TABLE/BLOCK DISW (add JDSXW)
 !              =MCMVAR+1, for command TABLE/BLOCK DISM (add JDSXM)
 !              =MCMVAR+1, for command TABLE/BLOCK DISV (add JDSXV)
+!              =MCMVAR+1, for command TABLE/BLOCK DISC (add JDSXC)
 !              =MCMVAR+1, for command TABLE/BLOCK DISTU (add JDSXT)
 !              =MCMVAR+1, for command TABLE/BLOCK DISIC (add JDSXI)
 !              =MCMVAR+1, for command TABLE/BLOCK DISSL (add JDSXL)
@@ -2144,7 +2157,7 @@
       INTEGER             JDSXS
       INTEGER             JDSXW
       INTEGER             JDSXM
-      INTEGER             JDSXV,       JDSXT
+      INTEGER             JDSXV,       JDSXC,       JDSXT
       INTEGER             JGSXW,       JGENR
       INTEGER             JRSXQ,       JRSXT,       JREDS,       JRADS
       INTEGER             JTSXG,       JTSXT,       JTSXS,       JTRAN

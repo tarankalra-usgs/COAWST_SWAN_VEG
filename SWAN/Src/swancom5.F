@@ -4880,7 +4880,8 @@
      &                   DSXBOT     ,                                     40.67 40.61
      &                   DSXSRF     ,                                     40.67 40.61
      &                   DSXWCP     ,                                     40.67 40.61
-     &                   DSXVEG     ,DSXTUR     ,                         40.35 40.67 40.61
+     &                   DSXVEG     ,DSXCDR     ,                         40.35 40.67 40.61
+     &                   DSXTUR     ,                                     40.35 40.67 40.61
      &                   DSXMUD     ,                                     40.67 40.61
      &                   DSXICE     ,                                     41.75
      &                   DSXSWL     ,                                     40.88
@@ -5023,6 +5024,7 @@
      &         DSXWCP(MCGRD)      ,                                       40.67 40.61
      &         DSXMUD(MCGRD)      ,                                       40.67 40.61
      &         DSXVEG(MCGRD)      ,                                       40.67 40.61
+     &         DSXCDR(MCGRD)      ,                                       40.67 40.61
      &         DSXTUR(MCGRD)      ,                                       40.35
      &         DSXICE(MCGRD)      ,                                       41.75
      &         DSXSWL(MCGRD)      ,                                       40.88
@@ -5156,6 +5158,7 @@
       DSXTUR(KCGRD(1)) = DSXTUR(KCGRD(1)) + ADISSIP(6)     ! turbulence           40.35
       DSXMUD(KCGRD(1)) = DSXMUD(KCGRD(1)) + ADISSIP(7)     ! mud dissip           40.67
       DSXICE(KCGRD(1)) = DSXICE(KCGRD(1)) + ADISSIP(8)     ! ice dissip           41.75
+      DSXCDR(KCGRD(1)) = DSXCDR(KCGRD(1)) + ADISSIP(9)     ! drag coeffveg        40.67
 !
       DISSXY(KCGRD(1)) = DISSXY(KCGRD(1)) + SUM(ADISSIP)   ! total dissip         40.67
 !

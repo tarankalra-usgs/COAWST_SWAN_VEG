@@ -2866,7 +2866,8 @@
       JNPDA3= 39                                                          40.55
       JNPTK2= 40                                                          40.55
       JNPTK3= 41                                                          40.55
-      MCMVAR = 41
+      JDSXC=  42                                                          40.55
+      MCMVAR = 42
       LADDS = .TRUE.
 #else
       MCMVAR = 28                                                         41.38 40.65 40.61 40.51 40.13
@@ -2924,6 +2925,7 @@
       JDSXS  = 1                                                          40.65 40.61
       JDSXW  = 1                                                          40.65 40.61
       JDSXV  = 1                                                          40.65 40.61
+      JDSXC  = 1                                                          40.65 40.61
 #endif
       JDSXM  = 1                                                          40.65 40.61
       JDSXT  = 1                                                          40.35
@@ -3670,19 +3672,19 @@
       OVHEXP(IVTYPE) = 0.1
       OVEXCV(IVTYPE) = -9.
 !
-!      IVTYPE = 57
-!      OVKEYW(IVTYPE) = 'DISV'                                             40.61
-!      OVSNAM(IVTYPE) = 'Sveg'                                             40.85
-!      OVLNAM(IVTYPE) = 'Vegetation dissipation'
-!      OVUNIT(IVTYPE) = 'm2/s'
-!      OVSVTY(IVTYPE) = 1
-!      OVLLIM(IVTYPE) = 0.
-!      OVULIM(IVTYPE) = 1000.
-!      OVLEXP(IVTYPE) = 0.
-!      OVHEXP(IVTYPE) = 0.1
-!      OVEXCV(IVTYPE) = -9.
-!
       IVTYPE = 57
+      OVKEYW(IVTYPE) = 'DISV'                                             40.61
+      OVSNAM(IVTYPE) = 'Sveg'                                             40.85
+      OVLNAM(IVTYPE) = 'Vegetation dissipation'
+      OVUNIT(IVTYPE) = 'm2/s'
+      OVSVTY(IVTYPE) = 1
+      OVLLIM(IVTYPE) = 0.
+      OVULIM(IVTYPE) = 1000.
+      OVLEXP(IVTYPE) = 0.
+      OVHEXP(IVTYPE) = 0.1
+      OVEXCV(IVTYPE) = -9.
+!
+      IVTYPE = 172
       OVKEYW(IVTYPE) = 'DICD'                                             40.61
       OVSNAM(IVTYPE) = 'Scdv'                                             40.85
       OVLNAM(IVTYPE) = 'Drag coefficient'

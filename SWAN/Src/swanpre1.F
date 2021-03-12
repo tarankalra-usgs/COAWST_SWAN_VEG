@@ -356,6 +356,7 @@
       TYPE VEGPT                                                          40.55
         INTEGER              :: N                                         40.55
         REAL                 :: H, D, C, Y                                40.55
+!        REAL                 :: C, Y                                      40.55
         TYPE(VEGPT), POINTER :: NEXTV                                     40.55
       END TYPE VEGPT                                                      40.55
 
@@ -2772,7 +2773,6 @@
         FRSTV%D = 0.
         FRSTV%N = 0
         FRSTV%C = 0.
-        FRSTV%Y = 0.        
         NULLIFY(FRSTV%NEXTV)
         CURRV => FRSTV
  303    CALL INREAL ('HEIGHT',HH,'REP',-1.)
@@ -2791,11 +2791,77 @@
               CALL MSGERR (2,'number of stems is negative or zero')
               NN = 1
            END IF
-           CALL INREAL ('DRAG_METHOD'  ,CC,'REQ', 0.)
-           IF ( CC.LE.0. ) THEN
-              CALL MSGERR (2,'drag coefficient is negative or zero')
+           CALL INREAL ('DRAG'  ,CC,'REQ', 0.)
+           IF ( CC.LT.0. ) THEN
+              CALL MSGERR (2,'drag coefficient is negative')
               CC = 0.
            END IF
+           ILMAX = ILMAX+1
+           write(6,*) "CC",ILMAX
+           ALLOCATE(TMPV)
+           TMPV%H = HH
+           TMPV%D = DD
+           TMPV%N = NN
+           TMPV%C = CC
+           NULLIFY(TMPV%NEXTV)
+           CURRV%NEXTV => TMPV
+           CURRV => TMPV
+           GO TO 303
+        END IF
+        IF (ILMAX.EQ.0) CALL MSGERR(2,'No vegetation parameters found')
+        IF (.NOT.ALLOCATED(LAYH  )) ALLOCATE(LAYH  (ILMAX))
+        IF (.NOT.ALLOCATED(VEGDIL)) ALLOCATE(VEGDIL(ILMAX))
+        IF (.NOT.ALLOCATED(VEGNSL)) ALLOCATE(VEGNSL(ILMAX))
+        IF (.NOT.ALLOCATED(VEGDRL)) ALLOCATE(VEGDRL(ILMAX))
+        CURRV => FRSTV%NEXTV
+        DO JJ = 1, ILMAX
+           LAYH  (JJ) = CURRV%H
+           VEGDIL(JJ) = CURRV%D
+           VEGNSL(JJ) = REAL(CURRV%N)
+           VEGDRL(JJ) = CURRV%C
+           CURRV => CURRV%NEXTV
+        END DO
+        DEALLOCATE(TMPV)
+        GOTO 100
+      END IF
+!
+! ==========================================
+!
+!   VEGCtation   < [height]  [diamtr]  [nstems]  [drag] >
+!
+! ==========================================
+!
+      IF (KEYWIS ('VEGC')) THEN
+        IVEG  = 2
+        ILMAX = 0
+        FRSTV%H = 0.
+        FRSTV%D = 0.
+        FRSTV%N = 0
+        FRSTV%C = 0.
+        FRSTV%Y = 0.
+        NULLIFY(FRSTV%NEXTV)
+        CURRV => FRSTV
+ 304    CALL INREAL ('HEIGHT',HH,'REP',-1.)
+        IF ( HH.NE.-1. ) THEN
+           IF ( HH.LT.0. ) THEN
+              CALL MSGERR (2,'height is negative')
+              HH = 0.
+           END IF
+           CALL INREAL ('DIAMTR',DD,'REQ', 0.)
+           IF ( DD.LT.0. ) THEN
+              CALL MSGERR (2,'stem diameter is negative')
+              DD = 0.
+           END IF
+           CALL ININTG ('NSTEMS',NN,'REQ', 1 )
+           IF ( NN.LE.0 ) THEN
+              CALL MSGERR (2,'number of stems is negative or zero')
+              NN = 1
+           END IF
+           CALL INREAL ('DRAG'  ,CC,'REQ', 0.)
+           IF ( CC.LT.0. ) THEN
+              CALL MSGERR (2,'drag coefficient is negative')
+              CC = 0.
+           ENDIF
            CALL INREAL ('YOUNGSMOD'  ,YY,'REQ', 0.)
            IF ( YY.LE.0. ) THEN
               CALL MSGERR (2,'Youngs modulus is negative or zero')
@@ -2806,12 +2872,12 @@
            TMPV%H = HH
            TMPV%D = DD
            TMPV%N = NN
-           TMPV%C = CC
-           TMPV%Y = YY
+           TMPV %C = CC
+           TMPV %Y = YY
            NULLIFY(TMPV%NEXTV)
            CURRV%NEXTV => TMPV
            CURRV => TMPV
-           GO TO 303
+           GO TO 304
         END IF
         IF (ILMAX.EQ.0) CALL MSGERR(2,'No vegetation parameters found')
         IF (.NOT.ALLOCATED(LAYH  )) ALLOCATE(LAYH  (ILMAX))
@@ -2831,6 +2897,80 @@
         DEALLOCATE(TMPV)
         GOTO 100
       END IF
+!      
+! ==========================================
+!
+!   VEGCoawst   < [drag coeff] [Youngs mod.] >
+!
+! ==========================================
+!
+!      IF (KEYWIS ('VEGC')) THEN
+!        IVEG  = 2
+!        ILMAX = 0
+!        FRSTV%H = 0.
+!        FRSTV%D = 0.
+!        FRSTV%N = 0
+!        FRSTV%C = 0.
+!        FRSTV%Y = 0.
+!        NULLIFY(FRSTV%NEXTV)
+!        CURRV => FRSTV
+!304     CALL INREAL ('HEIGHT',HH,'REP',-1.)
+!        IF ( HH.NE.-1. ) THEN
+!           IF ( HH.LT.0. ) THEN
+!              CALL MSGERR (2,'height is negative')
+!              HH = 0.
+!           END IF
+!           CALL INREAL ('DIAMTR',DD,'REQ', 0.)
+!           IF ( DD.LT.0. ) THEN
+!              CALL MSGERR (2,'stem diameter is negative')
+!              DD = 0.
+!           END IF
+!           CALL ININTG ('NSTEMS',NN,'REQ', 1 )
+!           IF ( NN.LE.0 ) THEN
+!              CALL MSGERR (2,'number of stems is negative or zero')
+!              NN = 1
+!           END IF
+!           CALL INREAL ('DRAG METHOD'  ,CC,'REQ', 0.)
+!           IF ( CC.LT.0. ) THEN
+!              CALL MSGERR (2,'drag method is negative')
+!              CC = 0.
+!           END IF
+!        !write(6,*) "CC",CC
+!           CALL INREAL ('YOUNGSMOD'  ,YY,'REQ', 0.)
+!           IF ( YY.LE.0. ) THEN
+!              CALL MSGERR (2,'Youngs modulus is negative or zero')
+!              YY = 0.
+!           END IF
+!           ILMAX = ILMAX+1
+!           ALLOCATE(TMPV)
+!!           TMPV%H = HH
+!           TMPV%D = DD
+!           TMPV%N = NN
+!           TMPV%C = CC
+!           TMPV%Y = YY
+!           NULLIFY(TMPV%NEXTV)
+!           CURRV%NEXTV => TMPV
+!           CURRV => TMPV
+!           GO TO 304
+!       ! END IF
+!        IF (ILMAX.EQ.0) CALL MSGERR(2,'No vegetation parameters found')
+!        IF (.NOT.ALLOCATED(LAYH  )) ALLOCATE(LAYH  (ILMAX))
+!        IF (.NOT.ALLOCATED(VEGDIL)) ALLOCATE(VEGDIL(ILMAX))
+!        IF (.NOT.ALLOCATED(VEGNSL)) ALLOCATE(VEGNSL(ILMAX))
+!        IF (.NOT.ALLOCATED(VEGDRL)) ALLOCATE(VEGDRL(ILMAX))
+!        IF (.NOT.ALLOCATED(VEGYML)) ALLOCATE(VEGYML(ILMAX))
+!        CURRV => FRSTV%NEXTV
+!        DO JJ = 1, ILMAX
+!           LAYH  (JJ) = CURRV%H
+!           VEGDIL(JJ) = CURRV%D
+!           VEGNSL(JJ) = REAL(CURRV%N)
+!           VEGDRL(JJ) = CURRV%C
+!           VEGYML(JJ) = CURRV%Y
+!           CURRV => CURRV%NEXTV
+!        END DO
+!        DEALLOCATE(TMPV)
+!        GOTO 100
+!      END IF
 !
 ! =================================================================
 !

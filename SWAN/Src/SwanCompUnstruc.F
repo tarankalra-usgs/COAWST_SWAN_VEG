@@ -532,6 +532,7 @@ subroutine SwanCompUnstruc ( ac2, ac1, compda, spcsig, spcdir, xytst, cross, it 
        compda(1:nverts,JDSXM) = 0.
        compda(1:nverts,JDSXI) = 0.
        compda(1:nverts,JDSXV) = 0.
+       compda(1:nverts,JDSXC) = 0.
        compda(1:nverts,JDSXT) = 0.
        compda(1:nverts,JDSXL) = 0.
        compda(1:nverts,JGENR) = 0.
@@ -1053,7 +1054,8 @@ subroutine SwanCompUnstruc ( ac2, ac1, compda, spcsig, spcdir, xytst, cross, it 
                                           amat(1,1,4)    , amat(1,1,5)    ,                  &
                                           amat(1,1,2)    , amat(1,1,3)    ,                  &
                                           compda(1,JDSXB), compda(1,JDSXS), compda(1,JDSXW), &
-                                          compda(1,JDSXV), compda(1,JDSXT), compda(1,JDSXM), &
+                                          compda(1,JDSXV), compda(1,JDSXC),                  &
+                                          compda(1,JDSXT), compda(1,JDSXM),                  &
                                           compda(1,JDSXI),                                   &
                                           compda(1,JDSXL),                                   &
                                           compda(1,JGSXW), compda(1,JGENR),                  &
