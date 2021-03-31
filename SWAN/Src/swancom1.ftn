@@ -560,16 +560,16 @@
 !TIMG!     SWTSTO                                                              40.23
 !     SWREDUCE                                                            40.30
 !JAC!     SWEXCHG                                                             40.30
-!     SWRECVAC                                                            40.30
-!     SWSENDAC                                                            40.30
+!WFR!     SWRECVAC                                                            40.30
+!WFR!     SWSENDAC                                                            40.30
 !JAC!     SWSYNC                                                              40.30
 !     MSGERR : Handles error messages according to severity               40.41
 !     NUMSTR : Converts integer/real to string                            40.41
 !     TXPBLA : Removes leading and trailing blanks in string              40.41
-!     STPNOW : Logical indicating whether program must
-!              terminated or not
+!MPI!     STPNOW : Logical indicating whether program must
+!MPI!              terminated or not
 !
-      LOGICAL STPNOW                                                      34.01
+!MPI      LOGICAL STPNOW                                                      34.01
 !
 !  9. Subroutines calling
 !
@@ -808,9 +808,9 @@
       INTEGER IARR(10)                                                    40.30
       REAL     ARR(10)                                                    40.30
 
-      INTEGER JDUM, JS, JE, JWFRS, JWFRE, INCJ, JJ, JNODE,                40.30
-     &        JSD, JED, IE, INCI, III, LSTCP                              40.31
-
+!WFR      INTEGER JDUM, JS, JE, JWFRS, JWFRE, INCJ, JJ, JNODE,                40.30
+!WFR     &        JSD, JED, IE, INCI, III, LSTCP                              40.31
+!WFR
 !JAC      INTEGER ISWP
 !JAC
       INTEGER II, IX1, IX2, IY1, IY2                                      40.31
@@ -874,7 +874,7 @@
 
       INTEGER, ALLOCATABLE :: ISLMIN(:), NFLIM(:), NRSCAL(:)              40.23
 
-      REAL, ALLOCATABLE :: AC2LOC(:)                                      40.30
+!MPI      REAL, ALLOCATABLE :: AC2LOC(:)                                      40.30
 
 !     Add variables for OMP thread parameters.                            40.31
 !$    INTEGER, EXTERNAL :: OMP_GET_NUM_THREADS, OMP_GET_THREAD_NUM        40.31
@@ -939,13 +939,13 @@
 
       IF (PROPSC.EQ.3) THEN                                               33.09
         ICMAX  = 13
-        LSTCP  = 3                                                        40.31
+!WFR        LSTCP  = 3                                                        40.31
       ELSE IF (PROPSC.EQ.2) THEN                                          33.10
         ICMAX  = 7                                                        40.59 33.10
-        LSTCP  = 2                                                        40.31
+!WFR        LSTCP  = 2                                                        40.31
       ELSE
         ICMAX  = 5                                                        40.59 33.10
-        LSTCP  = 1                                                        40.31
+!WFR        LSTCP  = 1                                                        40.31
       ENDIF                                                               33.08
 
 !TIMG      CALL SWTSTA(101)                                                    40.23
@@ -1012,8 +1012,8 @@
 !     *** Lock array for thread management                                40.22
 !$    ALLOCATE(LLOCK(MXC,MYC))                                            40.31 40.22
 
-      ALLOCATE(AC2LOC(MCGRD))                                             40.30
-
+!MPI      ALLOCATE(AC2LOC(MCGRD))                                             40.30
+!MPI
       ALLOCATE(SWTSDA(MDC,MSC,NPTSTA,MTSVAR))                             40.31
       SWTSDA = 0.                                                         40.41
 !
@@ -1277,7 +1277,6 @@
           COMPDA(IP,JDSXW) = 0.                                           40.61
           COMPDA(IP,JDSXM) = 0.                                           40.61
           COMPDA(IP,JDSXV) = 0.                                           40.61
-          COMPDA(IP,JDSXC) = 0.                                           40.61
           COMPDA(IP,JDSXI) = 0.                                           41.75
           COMPDA(IP,JDSXT) = 0.                                           40.35
           COMPDA(IP,JDSXL) = 0.                                           40.88
@@ -1433,7 +1432,7 @@
 !
 !       *** loop over sweep directions ***
 !
-        DO 410 SWPDIR = 1, 4
+!WFR        DO 410 SWPDIR = 1, 4
 !JAC        DO 410 ISWP = 0, 3
 !JAC
 !JAC! ======================================================================  40.30
@@ -1614,80 +1613,80 @@
 !$OMP BARRIER                                                             40.31
 !$OMP FLUSH                                                               40.31
 !
-! ======================================================================  40.30
-!                                                                         40.30
-!           Set up start and end indices for respectively                 40.30
-!           IX- and IY-loops appropriated for block                       40.30
-!           wavefront approach within distributed-memory                  40.30
-!           environment                                                   40.30
-!                                                                         40.30
-! ======================================================================  40.30
-
-            IF ( MXCGL.GT.MYCGL .OR. .NOT.PARLL ) THEN                    40.30
-               JS   =  IY1                                                40.30
-               JE   =  IY2                                                40.30
-               INCJ = -IYSTEP                                             40.30
-               IS   =  IX1                                                40.30
-               IE   =  IX2                                                40.30
-               INCI = -KSX                                                40.30
-               IF (SWPDIR.EQ.1) THEN                                      40.30
-                  JSD   = JE - 1                                          40.30
-                  JED   = JS - 1                                          40.30
-                  JNODE = INODE                                           40.30
-                  JWFRS = 0                                               40.30
-                  JWFRE = NPROC-1                                         40.30
-               ELSE IF (SWPDIR.EQ.2) THEN                                 40.30
-                  JSD   = JE - 1                                          40.30
-                  JED   = JS - 1                                          40.30
-                  JNODE = NPROC+1-INODE                                   40.30
-                  JWFRS = 0                                               40.30
-                  JWFRE = NPROC-1                                         40.30
-               ELSE IF (SWPDIR.EQ.3) THEN                                 40.30
-                  JSD   = JS - 1                                          40.30
-                  JED   = JE - 1                                          40.30
-                  JNODE = NPROC+1-INODE                                   40.30
-                  JWFRS = NPROC-1                                         40.30
-                  JWFRE = 0                                               40.30
-               ELSE IF (SWPDIR.EQ.4) THEN                                 40.30
-                  JSD   = JS - 1                                          40.30
-                  JED   = JE - 1                                          40.30
-                  JNODE = INODE                                           40.30
-                  JWFRS = NPROC-1                                         40.30
-                  JWFRE = 0                                               40.30
-               END IF                                                     40.30
-            ELSE                                                          40.30
-               JS   =  IX1                                                40.30
-               JE   =  IX2                                                40.30
-               INCJ = -KSX                                                40.30
-               IS   =  IY1                                                40.30
-               IE   =  IY2                                                40.30
-               INCI = -IYSTEP                                             40.30
-               IF (SWPDIR.EQ.1) THEN                                      40.30
-                  JSD   = JE - 1                                          40.30
-                  JED   = JS - 1                                          40.30
-                  JNODE = INODE                                           40.30
-                  JWFRS = 0                                               40.30
-                  JWFRE = NPROC-1                                         40.30
-               ELSE IF (SWPDIR.EQ.2) THEN                                 40.30
-                  JSD   = JS - 1                                          40.30
-                  JED   = JE - 1                                          40.30
-                  JNODE = INODE                                           40.30
-                  JWFRS = NPROC-1                                         40.30
-                  JWFRE = 0                                               40.30
-               ELSE IF (SWPDIR.EQ.3) THEN                                 40.30
-                  JSD   = JS - 1                                          40.30
-                  JED   = JE - 1                                          40.30
-                  JNODE = NPROC+1-INODE                                   40.30
-                  JWFRS = NPROC-1                                         40.30
-                  JWFRE = 0                                               40.30
-               ELSE IF (SWPDIR.EQ.4) THEN                                 40.30
-                  JSD   = JE - 1                                          40.30
-                  JED   = JS - 1                                          40.30
-                  JNODE = NPROC+1-INODE                                   40.30
-                  JWFRS = 0                                               40.30
-                  JWFRE = NPROC-1                                         40.30
-               END IF                                                     40.30
-            END IF                                                        40.30
+!WFR! ======================================================================  40.30
+!WFR!                                                                         40.30
+!WFR!           Set up start and end indices for respectively                 40.30
+!WFR!           IX- and IY-loops appropriated for block                       40.30
+!WFR!           wavefront approach within distributed-memory                  40.30
+!WFR!           environment                                                   40.30
+!WFR!                                                                         40.30
+!WFR! ======================================================================  40.30
+!WFR
+!WFR            IF ( MXCGL.GT.MYCGL .OR. .NOT.PARLL ) THEN                    40.30
+!WFR               JS   =  IY1                                                40.30
+!WFR               JE   =  IY2                                                40.30
+!WFR               INCJ = -IYSTEP                                             40.30
+!WFR               IS   =  IX1                                                40.30
+!WFR               IE   =  IX2                                                40.30
+!WFR               INCI = -KSX                                                40.30
+!WFR               IF (SWPDIR.EQ.1) THEN                                      40.30
+!WFR                  JSD   = JE - 1                                          40.30
+!WFR                  JED   = JS - 1                                          40.30
+!WFR                  JNODE = INODE                                           40.30
+!WFR                  JWFRS = 0                                               40.30
+!WFR                  JWFRE = NPROC-1                                         40.30
+!WFR               ELSE IF (SWPDIR.EQ.2) THEN                                 40.30
+!WFR                  JSD   = JE - 1                                          40.30
+!WFR                  JED   = JS - 1                                          40.30
+!WFR                  JNODE = NPROC+1-INODE                                   40.30
+!WFR                  JWFRS = 0                                               40.30
+!WFR                  JWFRE = NPROC-1                                         40.30
+!WFR               ELSE IF (SWPDIR.EQ.3) THEN                                 40.30
+!WFR                  JSD   = JS - 1                                          40.30
+!WFR                  JED   = JE - 1                                          40.30
+!WFR                  JNODE = NPROC+1-INODE                                   40.30
+!WFR                  JWFRS = NPROC-1                                         40.30
+!WFR                  JWFRE = 0                                               40.30
+!WFR               ELSE IF (SWPDIR.EQ.4) THEN                                 40.30
+!WFR                  JSD   = JS - 1                                          40.30
+!WFR                  JED   = JE - 1                                          40.30
+!WFR                  JNODE = INODE                                           40.30
+!WFR                  JWFRS = NPROC-1                                         40.30
+!WFR                  JWFRE = 0                                               40.30
+!WFR               END IF                                                     40.30
+!WFR            ELSE                                                          40.30
+!WFR               JS   =  IX1                                                40.30
+!WFR               JE   =  IX2                                                40.30
+!WFR               INCJ = -KSX                                                40.30
+!WFR               IS   =  IY1                                                40.30
+!WFR               IE   =  IY2                                                40.30
+!WFR               INCI = -IYSTEP                                             40.30
+!WFR               IF (SWPDIR.EQ.1) THEN                                      40.30
+!WFR                  JSD   = JE - 1                                          40.30
+!WFR                  JED   = JS - 1                                          40.30
+!WFR                  JNODE = INODE                                           40.30
+!WFR                  JWFRS = 0                                               40.30
+!WFR                  JWFRE = NPROC-1                                         40.30
+!WFR               ELSE IF (SWPDIR.EQ.2) THEN                                 40.30
+!WFR                  JSD   = JS - 1                                          40.30
+!WFR                  JED   = JE - 1                                          40.30
+!WFR                  JNODE = INODE                                           40.30
+!WFR                  JWFRS = NPROC-1                                         40.30
+!WFR                  JWFRE = 0                                               40.30
+!WFR               ELSE IF (SWPDIR.EQ.3) THEN                                 40.30
+!WFR                  JSD   = JS - 1                                          40.30
+!WFR                  JED   = JE - 1                                          40.30
+!WFR                  JNODE = NPROC+1-INODE                                   40.30
+!WFR                  JWFRS = NPROC-1                                         40.30
+!WFR                  JWFRE = 0                                               40.30
+!WFR               ELSE IF (SWPDIR.EQ.4) THEN                                 40.30
+!WFR                  JSD   = JE - 1                                          40.30
+!WFR                  JED   = JS - 1                                          40.30
+!WFR                  JNODE = NPROC+1-INODE                                   40.30
+!WFR                  JWFRS = 0                                               40.30
+!WFR                  JWFRE = NPROC-1                                         40.30
+!WFR               END IF                                                     40.30
+!WFR            END IF                                                        40.30
 
 !----------------------------------------------------------------------   40.22
 !     Execute loop over rows of spatial grid in a                         40.22
@@ -1699,46 +1698,46 @@
 
 !JAC            DO 400 IY = IY1, IY2, -IYSTEP                                 32.02
 !JAC              DO 390 IX = IX1, IX2, -KSX
-! ======================================================================  40.30
-!                                                                         40.30
-!           Within distributed-memory environment, current                40.30
-!           sweep is carry out in a block wavefront manner                40.30
-!                                                                         40.30
-! ======================================================================  40.30
-
-            DO 400 JDUM = JS+JWFRS, JE+JWFRE, INCJ                        40.30
-
-             JJ = JDUM-JNODE+1                                            40.30
-             IF (JNODE.GE.JDUM-JSD .AND. JNODE.LE.JDUM-JED) THEN          40.30
-
-! ======================================================================  40.30
-!                                                                         40.30
-!             Receive action density from previous updated                40.30
-!             row within distributed-memory environment                   40.30
-!                                                                         40.30
-! ======================================================================  40.30
-
-!TIMG!MPI              CALL SWTSTA(213)                                            40.30
-              IF ( MXCGL.GT.MYCGL ) THEN                                  40.30
-                 DO III = LSTCP, 1, -1                                    40.31
-                    CALL SWRECVAC(AC2,IS-III*INCI,JJ,SWPDIR,KGRPNT)       40.31
-                 END DO                                                   40.31
-              ELSE                                                        40.30
-                 DO III = LSTCP, 1, -1                                    40.31
-                    CALL SWRECVAC(AC2,JJ,IS-III*INCI,SWPDIR,KGRPNT)       40.31
-                 END DO                                                   40.31
-              END IF                                                      40.30
-!TIMG!MPI              CALL SWTSTO(213)                                            40.30
-              IF (STPNOW()) RETURN                                        40.30
-
-              DO 390 II = IS, IE, INCI                                    40.30
-                IF ( MXCGL.GT.MYCGL .OR. .NOT.PARLL ) THEN                40.30
-                  IX = II                                                 40.30
-                  IY = JJ                                                 40.30
-                ELSE                                                      40.30
-                  IX = JJ                                                 40.30
-                  IY = II                                                 40.30
-                END IF                                                    40.30
+!WFR! ======================================================================  40.30
+!WFR!                                                                         40.30
+!WFR!           Within distributed-memory environment, current                40.30
+!WFR!           sweep is carry out in a block wavefront manner                40.30
+!WFR!                                                                         40.30
+!WFR! ======================================================================  40.30
+!WFR
+!WFR            DO 400 JDUM = JS+JWFRS, JE+JWFRE, INCJ                        40.30
+!WFR
+!WFR             JJ = JDUM-JNODE+1                                            40.30
+!WFR             IF (JNODE.GE.JDUM-JSD .AND. JNODE.LE.JDUM-JED) THEN          40.30
+!WFR
+!WFR!MPI! ======================================================================  40.30
+!WFR!MPI!                                                                         40.30
+!WFR!MPI!             Receive action density from previous updated                40.30
+!WFR!MPI!             row within distributed-memory environment                   40.30
+!WFR!MPI!                                                                         40.30
+!WFR!MPI! ======================================================================  40.30
+!WFR!MPI
+!WFR!TIMG!MPI              CALL SWTSTA(213)                                            40.30
+!WFR!MPI              IF ( MXCGL.GT.MYCGL ) THEN                                  40.30
+!WFR!MPI                 DO III = LSTCP, 1, -1                                    40.31
+!WFR!MPI                    CALL SWRECVAC(AC2,IS-III*INCI,JJ,SWPDIR,KGRPNT)       40.31
+!WFR!MPI                 END DO                                                   40.31
+!WFR!MPI              ELSE                                                        40.30
+!WFR!MPI                 DO III = LSTCP, 1, -1                                    40.31
+!WFR!MPI                    CALL SWRECVAC(AC2,JJ,IS-III*INCI,SWPDIR,KGRPNT)       40.31
+!WFR!MPI                 END DO                                                   40.31
+!WFR!MPI              END IF                                                      40.30
+!WFR!TIMG!MPI              CALL SWTSTO(213)                                            40.30
+!WFR!MPI              IF (STPNOW()) RETURN                                        40.30
+!WFR
+!WFR              DO 390 II = IS, IE, INCI                                    40.30
+!WFR                IF ( MXCGL.GT.MYCGL .OR. .NOT.PARLL ) THEN                40.30
+!WFR                  IX = II                                                 40.30
+!WFR                  IY = JJ                                                 40.30
+!WFR                ELSE                                                      40.30
+!WFR                  IX = JJ                                                 40.30
+!WFR                  IY = II                                                 40.30
+!WFR                END IF                                                    40.30
 
 !----------------------------------------------------------------------   40.22
 !               The next while loop will guarantee execution within       40.22
@@ -1783,9 +1782,9 @@
      &            ISLMIN           ,NFLIM            ,NRSCAL           ,  40.23
      &            MEMSINA          ,MEMSINB          ,                    40.88
      &            CAX1             ,CAY1                                  40.22
-     &                                    )
+     &                                                                 )
 !TIMG                CALL SWTSTO(104)                                          40.23
-                IF (STPNOW()) RETURN                                      34.01
+!MPI                IF (STPNOW()) RETURN                                      34.01
 
 !----------------------------------------------------------------------   40.22
 !               Once the computation is done for grid point (IX,IY) the   40.22
@@ -1798,27 +1797,27 @@
 
  390          CONTINUE
 
-! ======================================================================  40.30
-!                                                                         40.30
-!             Send action density to next row                             40.30
-!             within distributed-memory environment                       40.30
-!                                                                         40.30
-! ======================================================================  40.30
-
-!TIMG!MPI              CALL SWTSTA(213)                                            40.30
-              IF ( MXCGL.GT.MYCGL ) THEN                                  40.30
-                 DO III = LSTCP-1, 0, -1                                  40.31
-                    CALL SWSENDAC(AC2,IE-III*INCI,JJ,SWPDIR,KGRPNT)       40.31
-                 END DO                                                   40.31
-              ELSE                                                        40.30
-                 DO III = LSTCP-1, 0, -1                                  40.31
-                    CALL SWSENDAC(AC2,JJ,IE-III*INCI,SWPDIR,KGRPNT)       40.31
-                 END DO                                                   40.31
-              END IF                                                      40.30
-!TIMG!MPI              CALL SWTSTO(213)                                            40.30
-              IF (STPNOW()) RETURN                                        40.30
-             END IF                                                       40.30
-
+!WFR!MPI! ======================================================================  40.30
+!WFR!MPI!                                                                         40.30
+!WFR!MPI!             Send action density to next row                             40.30
+!WFR!MPI!             within distributed-memory environment                       40.30
+!WFR!MPI!                                                                         40.30
+!WFR!MPI! ======================================================================  40.30
+!WFR!MPI
+!WFR!TIMG!MPI              CALL SWTSTA(213)                                            40.30
+!WFR!MPI              IF ( MXCGL.GT.MYCGL ) THEN                                  40.30
+!WFR!MPI                 DO III = LSTCP-1, 0, -1                                  40.31
+!WFR!MPI                    CALL SWSENDAC(AC2,IE-III*INCI,JJ,SWPDIR,KGRPNT)       40.31
+!WFR!MPI                 END DO                                                   40.31
+!WFR!MPI              ELSE                                                        40.30
+!WFR!MPI                 DO III = LSTCP-1, 0, -1                                  40.31
+!WFR!MPI                    CALL SWSENDAC(AC2,JJ,IE-III*INCI,SWPDIR,KGRPNT)       40.31
+!WFR!MPI                 END DO                                                   40.31
+!WFR!MPI              END IF                                                      40.30
+!WFR!TIMG!MPI              CALL SWTSTO(213)                                            40.30
+!WFR!MPI              IF (STPNOW()) RETURN                                        40.30
+!WFR             END IF                                                       40.30
+!WFR
  400        CONTINUE
 !$OMP ENDDO NOWAIT                                                        40.22
 !JAC
@@ -1850,23 +1849,23 @@
 !----------------------------------------------------------------------   40.22
 !$OMP BARRIER                                                             40.22
  410    CONTINUE
-!
-!       --- exchange action densities at subdomain interfaces             40.31
-!           within distributed-memory environment if S&L scheme           40.31
-!           is employed because of one downwind point present             40.31
-!
-        IF (PROPSC.EQ.3) THEN                                             40.31
-!TIMG!MPI           CALL SWTSTA(213)                                               40.31
-           DO ID = 1, MDC                                                 40.31
-              DO IS = 1, MSC                                              40.31
-                 AC2LOC(:) = AC2(ID,IS,:)                                 40.31
-                 CALL SWEXCHG( AC2LOC, KGRPNT )                           40.31
-                 AC2(ID,IS,:) = AC2LOC(:)                                 40.31
-              END DO                                                      40.31
-           END DO                                                         40.31
-!TIMG!MPI           CALL SWTSTO(213)                                               40.31
-           IF (STPNOW()) RETURN                                           40.31
-        END IF                                                            40.31
+!WFR!MPI!
+!WFR!MPI!       --- exchange action densities at subdomain interfaces             40.31
+!WFR!MPI!           within distributed-memory environment if S&L scheme           40.31
+!WFR!MPI!           is employed because of one downwind point present             40.31
+!WFR!MPI!
+!WFR!MPI        IF (PROPSC.EQ.3) THEN                                             40.31
+!WFR!TIMG!MPI           CALL SWTSTA(213)                                               40.31
+!WFR!MPI           DO ID = 1, MDC                                                 40.31
+!WFR!MPI              DO IS = 1, MSC                                              40.31
+!WFR!MPI                 AC2LOC(:) = AC2(ID,IS,:)                                 40.31
+!WFR!MPI                 CALL SWEXCHG( AC2LOC, KGRPNT )                           40.31
+!WFR!MPI                 AC2(ID,IS,:) = AC2LOC(:)                                 40.31
+!WFR!MPI              END DO                                                      40.31
+!WFR!MPI           END DO                                                         40.31
+!WFR!TIMG!MPI           CALL SWTSTO(213)                                               40.31
+!WFR!MPI           IF (STPNOW()) RETURN                                           40.31
+!WFR!MPI        END IF                                                            40.31
 
 !----------------------------------------------------------------------   40.31
 !     Each thread sum contributions to the global INOCNV counter          40.31
@@ -1901,38 +1900,38 @@
            MXNFR = MAXVAL(NRSCAL)                                         40.23
            NPFR  = COUNT(MASK=NRSCAL>0)                                   40.23
 !                                                                         40.23
-! ======================================================================  40.30
-!                                                                         40.30
-!          Gather data meant for global reductions in arrays              40.30
-!          IARR and ARR within distributed-memory environment             40.30
-!                                                                         40.30
-! ======================================================================  40.30
-!                                                                         40.30
-           IARR(1) = NWETP                                                40.30
-           IARR(2) = NPFL                                                 40.30
-           IARR(3) = NPFR                                                 40.30
-           IARR(4) = INOCNV                                               40.30
-!                                                                         40.30
-           ARR(1)  = REAL(MXNFL)                                          40.30
-           ARR(2)  = REAL(MXNFR)                                          40.30
-!                                                                         40.30
-!          --- carry out reductions across all nodes                      40.30
-!                                                                         40.30
-           CALL SWREDUCE(   ARR, 4, SWREAL, SWMAX )                       40.30
-           IF (STPNOW()) RETURN                                           40.30
-           CALL SWREDUCE(  IARR, 4, SWINT , SWSUM )                       40.30
-           IF (STPNOW()) RETURN                                           40.30
-           CALL SWREDUCE( MNISL, 1, SWINT , SWMIN )                       40.30
-           IF (STPNOW()) RETURN                                           40.30
-!                                                                         40.30
-           NWETP     = IARR(1)                                            40.30
-           NPFL      = IARR(2)                                            40.30
-           NPFR      = IARR(3)                                            40.30
-           INOCNV    = IARR(4)                                            40.30
-!                                                                         40.30
-           MXNFL     = NINT(ARR(1))                                       40.30
-           MXNFR     = NINT(ARR(2))                                       40.30
-!                                                                         40.30
+!MPI! ======================================================================  40.30
+!MPI!                                                                         40.30
+!MPI!          Gather data meant for global reductions in arrays              40.30
+!MPI!          IARR and ARR within distributed-memory environment             40.30
+!MPI!                                                                         40.30
+!MPI! ======================================================================  40.30
+!MPI!                                                                         40.30
+!MPI           IARR(1) = NWETP                                                40.30
+!MPI           IARR(2) = NPFL                                                 40.30
+!MPI           IARR(3) = NPFR                                                 40.30
+!MPI           IARR(4) = INOCNV                                               40.30
+!MPI!                                                                         40.30
+!MPI           ARR(1)  = REAL(MXNFL)                                          40.30
+!MPI           ARR(2)  = REAL(MXNFR)                                          40.30
+!MPI!                                                                         40.30
+!MPI!          --- carry out reductions across all nodes                      40.30
+!MPI!                                                                         40.30
+!MPI           CALL SWREDUCE(   ARR, 4, SWREAL, SWMAX )                       40.30
+!MPI           IF (STPNOW()) RETURN                                           40.30
+!MPI           CALL SWREDUCE(  IARR, 4, SWINT , SWSUM )                       40.30
+!MPI           IF (STPNOW()) RETURN                                           40.30
+!MPI           CALL SWREDUCE( MNISL, 1, SWINT , SWMIN )                       40.30
+!MPI           IF (STPNOW()) RETURN                                           40.30
+!MPI!                                                                         40.30
+!MPI           NWETP     = IARR(1)                                            40.30
+!MPI           NPFL      = IARR(2)                                            40.30
+!MPI           NPFR      = IARR(3)                                            40.30
+!MPI           INOCNV    = IARR(4)                                            40.30
+!MPI!                                                                         40.30
+!MPI           MXNFL     = NINT(ARR(1))                                       40.30
+!MPI           MXNFR     = NINT(ARR(2))                                       40.30
+!MPI!                                                                         40.30
            FRAC = REAL(NPFL)*100./REAL(NWETP)                             40.23
            IF(NPFL.GT.0) WRITE(PRINTF,110) 'limiter',FRAC,MXNFL           40.23
            IF (NSTATC.EQ.0 .AND. NPFL.GT.0 .AND. IAMMASTER)               40.95 40.23
@@ -2047,16 +2046,16 @@
 !----------------------------------------------------------------------   40.22
 !$OMP END MASTER                                                          40.22
 !
-!       --- exchange COMPDA at subdomain interfaces
-!           within distributed-memory environment
-!
+!MPI!       --- exchange COMPDA at subdomain interfaces
+!MPI!           within distributed-memory environment
+!MPI!
 !TIMG!MPI        CALL SWTSTA(213)
-        DO J = 1, MCMVAR
-           CALL SWEXCHG( COMPDA(1,J), KGRPNT )
+!MPI        DO J = 1, MCMVAR
+!WFR!MPI           CALL SWEXCHG( COMPDA(1,J), KGRPNT )
 !JAC!MPI           CALL SWEXCHG( COMPDA(1,J), 0, KGRPNT )
-        ENDDO
+!MPI        ENDDO
 !TIMG!MPI        CALL SWTSTO(213)
-        IF (STPNOW()) RETURN
+!MPI        IF (STPNOW()) RETURN
 !
 !----------------------------------------------------------------------   40.22
 !     Synchronize threads before checking accuracy and before             40.22
@@ -2169,7 +2168,7 @@
       DEALLOCATE(MEMSINA)                                                 40.88
       DEALLOCATE(MEMSINB)                                                 40.88
 !$    DEALLOCATE(LLOCK)                                                   40.22
-      DEALLOCATE(AC2LOC)                                                  40.30
+!MPI      DEALLOCATE(AC2LOC)                                                  40.30
       DEALLOCATE(SWTSDA)                                                  40.31
 !TIMG      CALL SWTSTO(101)                                                    40.23
 !----------------------------------------------------------------------   40.22
@@ -3218,9 +3217,7 @@
      &  SWMATR(1,1,JGEN0)   ,SWMATR(1,1,JGEN1)   ,                        40.85
      &  SWMATR(1,1,JRED0)   ,SWMATR(1,1,JRED1)   ,                        40.85
      &  XIS                 ,COMPDA(1,JFRC2)     ,IT                  ,   40.00
-     &  COMPDA(1,JNPLA2)    ,COMPDA(1,JNPHT2)                         ,   40.59 40.35
-     &  COMPDA(1,JNPDA2)    ,COMPDA(1,JNPTK2)                         ,   40.59 40.35
-     &  COMPDA(1,JTURB2)    ,COMPDA(1,JMUDL2)                         ,   40.59 40.35 40.55
+     &  COMPDA(1,JNPLA2)    ,COMPDA(1,JTURB2)    ,COMPDA(1,JMUDL2)    ,   40.59 40.35 40.55
      &  COMPDA(1,JAICE2)    ,COMPDA(1,JHICE2)    ,                        41.75
      &  COMPDA(1,JURSEL)    ,LSWMAT(1,1,JABIN)   ,REFLSO              ,   40.41 40.03
      &  COMPDA(1,JTAUW)
@@ -3365,8 +3362,8 @@
      &                  COMPDA(1,JDSXB)    ,                              40.67 40.61
      &                  COMPDA(1,JDSXS)    ,                              40.67 40.61
      &                  COMPDA(1,JDSXW)    ,                              40.67 40.61
-     &                  COMPDA(1,JDSXV)    ,COMPDA(1,JDSXC)    ,          40.35 40.67 40.61
-     &                  COMPDA(1,JDSXT)    ,COMPDA(1,JDSXM)    ,          40.35 40.67 40.61
+     &                  COMPDA(1,JDSXV)    ,COMPDA(1,JDSXT)    ,          40.35 40.67 40.61
+     &                  COMPDA(1,JDSXM)    ,                              40.67 40.61
      &                  COMPDA(1,JDSXI)    ,                              41.75
      &                  COMPDA(1,JDSXL)    ,                              40.88
      &                  COMPDA(1,JGSXW)    ,COMPDA(1,JGENR)    ,          40.85
@@ -3672,23 +3669,20 @@
       IF (IVEG.EQ.1) THEN                                                 40.55
          WRITE(PRINTF,7006)                                               40.55
  7006    FORMAT(' Vegetation due to Dalrymple (1984)')                    40.55
-      ELSEIF (IVEG.EQ.2) THEN                                             40.55
-         WRITE(PRINTF,7007)                                               40.55
- 7007    FORMAT(' Vegetation due to Dalrymple (1984)')                    40.55
       ELSE                                                                40.55
          WRITE (PRINTF, *) 'Vegetation is off'                            40.55
       ENDIF                                                               40.55
 !
       IF (ITURBV.EQ.1) THEN                                               40.35
-         WRITE(PRINTF,7008) PTURBV(1), PTURBV(2)                          40.35
- 7008    FORMAT(' Turbulent viscosity  : CTB    ',E12.4,' TBCUR ',E12.4)  40.35
+         WRITE(PRINTF,7007) PTURBV(1), PTURBV(2)                          40.35
+ 7007    FORMAT(' Turbulent viscosity  : CTB    ',E12.4,' TBCUR ',E12.4)  40.35
       ELSE                                                                40.35
          WRITE (PRINTF, *) 'Turbulence is off'                            40.35
       ENDIF                                                               40.35
 !
       IF (IMUD.EQ.1) THEN                                                 40.59
-         WRITE(PRINTF,7009) PMUD(2), PMUD(3)                              40.59
- 7009    FORMAT(' Mud Ng (2000)        : RHOM   ',E12.4,' KINVIS',E12.4)  40.59
+         WRITE(PRINTF,7008) PMUD(2), PMUD(3)                              40.59
+ 7008    FORMAT(' Mud Ng (2000)        : RHOM   ',E12.4,' KINVIS',E12.4)  40.59
       ELSE                                                                40.59
          WRITE (PRINTF, *) 'Fluid mud is off'                             40.59
       ENDIF                                                               40.59
@@ -4046,7 +4040,7 @@
 !     SWREDUCE         Performs a global reduction
 !
       LOGICAL EQREAL
-      LOGICAL STPNOW
+!MPI      LOGICAL STPNOW
 !
 !  9. Subroutines calling
 !
@@ -4232,7 +4226,7 @@
       ARR(2) = SMN2                                                       40.30
       CALL SWREDUCE( ARR, 2, SWREAL, SWSUM )                              40.30
       CALL SWREDUCE( NINDX, 1, SWINT, SWSUM )                             40.41
-      IF (STPNOW()) RETURN                                                40.30
+!MPI      IF (STPNOW()) RETURN                                                40.30
       HSMN2 = ARR(1) / REAL(NINDX)                                        40.30 30.82
        SMN2 = ARR(2) / REAL(NINDX)                                        40.30 30.82
 !$OMP END MASTER                                                          40.31
@@ -4331,7 +4325,7 @@
 !$OMP MASTER                                                              40.31
 !
       CALL SWREDUCE ( IACCUR, 1, SWINT, SWSUM )                           40.30
-      IF (STPNOW()) RETURN                                                40.30
+!MPI      IF (STPNOW()) RETURN                                                40.30
       ACCUR  = REAL(IACCUR) * 100. / REAL(NINDX)
 !$OMP END MASTER                                                          40.31
 !$OMP BARRIER                                                             40.31
@@ -6613,10 +6607,8 @@
      &                     DISSC0     ,DISSC1     ,GENC0      ,           40.85
      &                     GENC1      ,REDC0      ,REDC1      ,           40.85
      &                     XIS        ,FRCOEF     ,IT         ,           30.00
-     &                     NPLA2      ,NPHT2                  ,           40.59 40.35 40.55
-     &                     NPDA2      ,NPTK2                  ,           40.59 40.35 40.55
-     &                     TURBV2     ,MUDL2                  ,           40.59 40.35 40.55
-     &                     AICE2      ,HICE2                  ,           41.75
+     &                     NPLA2      ,TURBV2     ,MUDL2      ,           40.59 40.35 40.55
+     &                     AICE2      ,HICE2      ,                       41.75
      &                     URSELL     ,ANYBIN     ,REFLSO     ,           40.41 40.03
      &                     TAUWV
      &                    ,URMSTOP                                        40.88
@@ -6894,12 +6886,8 @@
 !      according to Hasselmann et al. (1974), Putnam and Jonsson (1949),
 !      Madsen et al. (1991) or Smith et al. (2011)
 !   ------------------------------------------------------------
-!   If SVEG is on (IVEG == 1 ) then,
+!   If SVEG is on (IVEG > 0 ) then,
 !     Call SVEG  to compute the source term due to vegetation
-!      dissipation according to Dalrymple (1984)
-!   If SVEG_COAWST is on (IVEG == 2 ) then,
-!     Call SVEG_COAWST spatially varying veg to compute the source 
-!      term due to vegetation
 !      dissipation according to Dalrymple (1984)
 !   ------------------------------------------------------------
 !   If STURBV is on (ITURBV > 0 ) then,
@@ -7022,8 +7010,7 @@
       REAL  :: REDC1 (1:MDC,1:MSC,1:MREDS)                                40.85
       REAL  :: URSELL(MCGRD)                                              40.03
       REAL  :: FRCOEF(MCGRD)                                              20.68
-      REAL  :: NPLA2(MCGRD), NPHT2(MCGRD)                                 40.55
-      REAL  :: NPDA2(MCGRD), NPTK2(MCGRD)                                 40.55
+      REAL  :: NPLA2(MCGRD)                                               40.55
       REAL  :: TURBV2(MCGRD)                                              40.35
       REAL  :: MUDL2(MCGRD)                                               40.59
       REAL, INTENT(IN)  :: AICE2(MCGRD)                                   41.75
@@ -7105,28 +7092,16 @@
 !TIMG      CALL SWTSTO(138)                                                    40.59
 !
 !TIMG      CALL SWTSTA(139)                                                    40.55
-      IF ( IVEG.EQ.1 ) THEN                                               40.55
+      IF ( IVEG.GE.1 ) THEN                                               40.55
 !
 !     *** wave-vegetation interactions ***                                40.55
 !
 !        *** energy dissipation according to Dalrymple (1984)             40.55
 !
          CALL SVEG (DEP2   ,IMATDA   ,ETOT   ,SMEBRK    ,                 40.58 40.55
-     &              KMESPC ,PLVEGT                      ,                 40.58 40.55
+     &              KMESPC ,PLVEGT   ,                                    40.58 40.55
      &              IDCMIN ,IDCMAX   ,ISSTOP ,DISSC1    ,                 40.55
      &              NPLA2  )                                              40.67 40.61 40.55
-      END IF                                                              40.55
-      IF ( IVEG.EQ.2 ) THEN                                               40.55
-!
-!     *** wave-vegetation interactions ***                                40.55
-!
-!        *** energy dissipation according to Dalrymple (1984)             40.55
-!
-         CALL SVEG_COAWST (DEP2   ,IMATDA   ,ETOT   ,SMEBRK    ,          40.58 40.55
-     &              KMESPC ,PLVEGT                             ,          40.58 40.55
-     &              IDCMIN ,IDCMAX   ,ISSTOP ,DISSC1           ,          40.55
-     &              ABRBOT ,KWAVE                              ,          40.55
-     &              NPLA2  ,NPHT2    ,NPDA2  ,NPTK2 )                     40.67 40.61 40.55
       END IF                                                              40.55
 !TIMG      CALL SWTSTO(139)                                                    40.55
 !
@@ -9413,7 +9388,7 @@
 !     SWREDUCE         Performs a global reduction
 !
       LOGICAL EQREAL
-      LOGICAL STPNOW
+!MPI      LOGICAL STPNOW
 !
 !  9. Subroutines calling
 !
@@ -9606,7 +9581,7 @@
       IARR(1) = IACCUR
       IARR(2) = WETGRD
       CALL SWREDUCE ( IARR, 2, SWINT, SWSUM )
-      IF (STPNOW()) RETURN
+!MPI      IF (STPNOW()) RETURN
       IACCUR = IARR(1)
       WETGRD = IARR(2)
       ACCUR  = CEILING(REAL(IACCUR) * 10000. / REAL(WETGRD))/100.

@@ -389,7 +389,7 @@
         CALL SWOEXD (OQPROC, MIP, VOQ(1+2*MIP),                           40.31 30.90
      &               VOQ(1+3*MIP), VOQR, VOQ(1),                          40.31 30.90
      &               COMPDA, KGRPNT, FORCE, CROSS, IONOD                  40.86 40.80 40.31
-!ADC     &               ,IRQ                                                 41.36
+!NPUN!ADC     &               ,IRQ                                                 41.36
 !PUN     &               ,IRQ                                                 41.36
      &              )
 !PUN        IF (STPNOW()) RETURN
@@ -444,7 +444,7 @@
 !
 !       ***** block output *****
         IF (RTYPE(1:3) .EQ. 'BLK') THEN
-          IF (PARLL) THEN                                                 40.31
+!NPUN          IF (PARLL) THEN                                                 40.31
 !PUN          IF (MNPROC>1) THEN                                              41.36
              CALL SWBLKP ( CORQ%OQI, CORQ%IVTYP, MXK, MYK, VOQR,          40.31
      &                     VOQ(1), IONOD )                                40.51 40.31
@@ -466,16 +466,16 @@
 !
 !       ***** table output *****
         IF (RTYPE(1:3) .EQ. 'TAB') THEN
-          IF (PARLL.AND.(RTYPE.EQ.'TABC')) THEN
+!NPUN!NCF          IF (PARLL.AND.(RTYPE.EQ.'TABC')) THEN
 !PUN!NCF          IF (MNPROC>1.AND.(RTYPE.EQ.'TABC')) THEN
-!            --- use "block" intermediate file facility to pass data between cores
-             CALL SWBLKP ( CORQ%OQI, CORQ%IVTYP, MIP, 1, VOQR,
-     &                     VOQ(1), IONOD )
-          ELSE
-             CALL SWTABP ( RTYPE, CORQ%OQI, CORQ%OQR, CORQ%IVTYP, SNAME,
+!NCF!            --- use "block" intermediate file facility to pass data between cores
+!NCF             CALL SWBLKP ( CORQ%OQI, CORQ%IVTYP, MIP, 1, VOQR,
+!NCF     &                     VOQ(1), IONOD )
+!NCF          ELSE
+!NCF             CALL SWTABP ( RTYPE, CORQ%OQI, CORQ%OQR, CORQ%IVTYP, SNAME,
 !NNCF          CALL SWTABP ( RTYPE, CORQ%OQI, CORQ%IVTYP, SNAME,               40.31
      &                  MIP, VOQR, VOQ(1), IONOD )                        40.51 40.31
-          ENDIF
+!NCF          ENDIF
           IF (STPNOW()) RETURN                                            34.01
           GOTO 68                                                         40.00
         ENDIF
@@ -939,8 +939,7 @@
 
       Numcouple=14
 #if defined VEGETATION && defined VEG_SWAN_COUPLING 
-!      Numcouple=15
-      Numcouple=16
+      Numcouple=15
 #endif 
       ALLOCATE (Cpltype(Numcouple))
       Cpltype(1)=54                      ! DISBOT  SWOEXD
@@ -959,7 +958,6 @@
       Cpltype(14)=58                     ! WQP     SWOEXA
 #if defined VEGETATION && defined VEG_SWAN_COUPLING 
       Cpltype(15)=57                     ! DISVEG  SWOEXD         
-      Cpltype(16)=172                    ! DICDVG  SWOEXD         
 #endif 
 !
       ALLOCATE (OQI(4))
@@ -1486,12 +1484,12 @@
 !***********************************************************************
 !
       USE TIMECOMM                                                        40.41
-      USE OCPCOMM2                                                        41.40
+!NCF      USE OCPCOMM2                                                        41.40
       USE OCPCOMM4                                                        40.41
       USE SWCOMM1                                                         40.41
       USE SWCOMM3                                                         40.41
       USE SWCOMM4                                                         40.41
-      USE OUTP_DATA                                                       41.40
+!NCF      USE OUTP_DATA                                                       41.40
       USE M_PARALL                                                        40.31
 !
 !
@@ -1628,7 +1626,7 @@
       REAL*8     OURQT                                                    40.51
       REAL*8     DIF, TNEXT
       LOGICAL    OQPROC(NMOVAR), LOGACT                                   30.00
-      LOGICAL    NCF                                                      41.40
+!NCF      LOGICAL    NCF                                                      41.40
       CHARACTER  PSNAME *(*), RTYPE *(*)                                  40.31 30.81
       SAVE IENT
       DATA IENT /0/                                                       40.31 30.81
@@ -1814,26 +1812,26 @@
           NVOQP     = NVOQP+2
         ENDIF
       ENDIF                                                               20.28
-!
-!     add significant wave height and wind to any netCDF file             41.40
-!
-      FILENM = OUTP_FILES(OUTI(2))                                        41.40
-      NCF    = INDEX( FILENM, '.NC' ).NE.0 .OR.
-     &         INDEX (FILENM, '.nc' ).NE.0
-      IF ( NCF ) THEN                                                     41.40
-!        significant wave height must be added
-         IF (.NOT.OQPROC(10)) THEN
-            NVOQP = NVOQP + 1
-            VOQR(10) = NVOQP
-            OQPROC(10)=.TRUE.
-         ENDIF
-!        wind must be added
-         IF (.NOT.OQPROC(26)) THEN
-            NVOQP = NVOQP + 2
-            VOQR(26) = NVOQP-1
-            OQPROC(26)=.TRUE.
-         ENDIF
-      ENDIF
+!NCF!
+!NCF!     add significant wave height and wind to any netCDF file             41.40
+!NCF!
+!NCF      FILENM = OUTP_FILES(OUTI(2))                                        41.40
+!NCF      NCF    = INDEX( FILENM, '.NC' ).NE.0 .OR.
+!NCF     &         INDEX (FILENM, '.nc' ).NE.0
+!NCF      IF ( NCF ) THEN                                                     41.40
+!NCF!        significant wave height must be added
+!NCF         IF (.NOT.OQPROC(10)) THEN
+!NCF            NVOQP = NVOQP + 1
+!NCF            VOQR(10) = NVOQP
+!NCF            OQPROC(10)=.TRUE.
+!NCF         ENDIF
+!NCF!        wind must be added
+!NCF         IF (.NOT.OQPROC(26)) THEN
+!NCF            NVOQP = NVOQP + 2
+!NCF            VOQR(26) = NVOQP-1
+!NCF            OQPROC(26)=.TRUE.
+!NCF         ENDIF
+!NCF      ENDIF
 !
       RETURN
 !*    end of subroutine SWORDC   **
@@ -2430,7 +2428,7 @@
 !                                                                      *
       SUBROUTINE SWOEXD (OQPROC, MIP, XC, YC, VOQR, VOQ, COMPDA ,KGRPNT,  30.21
      &                   FORCE, CROSS, IONOD                              40.86 40.80 40.31
-!ADC     &                   ,IRQ                                             41.36
+!NPUN!ADC     &                   ,IRQ                                             41.36
 !PUN     &                   ,IRQ                                             41.36
      &                  )
 !                                                                      *
@@ -2563,7 +2561,7 @@
 #endif
       INTEGER    VOQR(*), KGRPNT(MXC,MYC)
       INTEGER    IONOD(*)                                                 40.31
-!ADC      INTEGER    IRQ                                                      41.36
+!NPUN!ADC      INTEGER    IRQ                                                      41.36
 !PUN      INTEGER    IRQ                                                      41.36
 !PUN      INTEGER    IVERTP, NOWNV
 !PUN      INTEGER    NREF, IOSTAT
@@ -2915,35 +2913,6 @@
           END DO
         ENDIF
       ENDIF
-
-!
-!     vegetation drag coefficient 
-!
-      IF (OQPROC(172)) THEN                                               40.61
-        IF (ITEST.GE.50 .OR. IOUTES .GE. 10) WRITE (PRTEST, 121) 172,
-     &  VOQR(172), JDSXC
-        IF (JDSXC.GT.1) THEN                                              40.65
-           IF (OPTG.NE.5) THEN                                            40.80
-             CALL SWIPOL(COMPDA(1,JDSXC),OVEXCV(172),XC, YC, MIP, CROSS,  40.86
-     &                    VOQ(1,VOQR(172)) ,KGRPNT, COMPDA(1,JDP2))
-           ELSE                                                           40.80
-              CALL SwanInterpolateOutput ( VOQ(1,VOQR(172)), VOQ(1,1),    40.80
-     &                                     VOQ(1,2), COMPDA(1,JDSXC),     40.80
-     &                                     MIP, KVERT, OVEXCV(172) )      40.80
-           ENDIF                                                          40.80
-        ELSE
-           DO IP = 1, MIP                                                 40.65
-             VOQ(IP,VOQR(172)) = OVEXCV(172)                              40.65
-           ENDDO                                                          40.65
-        ENDIF
-        IF (INRHOG.EQ.1) THEN
-          DO IP = 1, MIP
-            F1 = VOQ(IP,VOQR(172))
-            IF(.NOT.EQREAL(F1,OVEXCV(172)))VOQ(IP,VOQR(172))=F1*RHO*GRAV
-          END DO
-        ENDIF
-      ENDIF
-
 !
 !     turbulent dissipation
 !
@@ -4288,7 +4257,7 @@
 !
 ! 13. Source text
 !
-      PARAMETER  (NVOTP=94)                                               41.62 41.15 40.64 40.51 40.41 40.00
+      PARAMETER  (NVOTP=93)                                               41.62 41.15 40.64 40.51 40.41 40.00
       REAL       XC(MIP)        ,YC(MIP)       ,AC2(MDC,MSC,MCGRD),
      &           VOQ(MIP,*)     ,
      &           WK(*)          ,
@@ -4317,7 +4286,7 @@
      &            140, 141, 142, 143, 144, 145, 146, 147, 148, 149,       41.62
      &            150, 151, 152, 153, 154, 155, 156, 157, 158, 159,       41.62
      &            160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 171,  41.62
-     &            42, 43, 44, 47, 48, 53, 58, 59, 71, 172/                41.15 40.64 40.51 40.41 40.00
+     &            42, 43, 44, 47, 48, 53, 58, 59, 71/                     41.15 40.64 40.51 40.41 40.00
       CALL STRACE (IENT, 'SWOEXA')
 !
 !     in case of transport of energy, compute the energy flux in all grid points
@@ -5697,7 +5666,7 @@
           CALL SWPART (TRANSPOSE(ACLOC), UABS, UDIR, VOQ(IP,VOQR(4)),     41.62
      &                 WK, SPCSIG, SPCDIR, NP, XPT, DIMXPT)               41.62
 !
-          IF (OQPROC(171)) VOQ(IP,VOQR(171:172)) = 0.                     41.62
+          IF (OQPROC(171)) VOQ(IP,VOQR(171))     = 0.                     41.62
           IF (OQPROC(100)) VOQ(IP,VOQR(100:109)) = 0.                     41.62
           IF (OQPROC(110)) VOQ(IP,VOQR(110:119)) = 0.                     41.62
           IF (OQPROC(120)) VOQ(IP,VOQR(120:129)) = 0.                     41.62
@@ -5709,8 +5678,7 @@
 !         limit number of partitions in output to 10                      41.62
           NP = MIN(NP,10)                                                 41.62
           IF (NP.GT.0) THEN                                               41.62
-!TSK       IF (OQPROC(171)) VOQ(IP,VOQR(171)) = NINT(REAL(NP))           41.62
-           IF (OQPROC(172)) VOQ(IP,VOQR(172)) = NINT(REAL(NP))            41.62
+            IF (OQPROC(171)) VOQ(IP,VOQR(171)) = NINT(REAL(NP))           41.62
             IF (OQPROC(100)) THEN                                         41.62
 !              XPT(:,0) are values for the total wave field, not required 41.62
                DO IPT = 1, NP                                             41.62
@@ -6271,7 +6239,7 @@
          DO ID = 1, MDC                                                   40.31
             DO IS = 1, MSC                                                40.31
                AC2LOC(:) = AC2(ID,IS,:)                                   40.31
-               CALL SWEXCHG( AC2LOC, KGRPNT )                             40.31
+!WFR               CALL SWEXCHG( AC2LOC, KGRPNT )                             40.31
 !JAC               CALL SWEXCHG( AC2LOC, 0, KGRPNT )                          40.31
                AC2(ID,IS,:) = AC2LOC(:)                                   40.31
             END DO                                                        40.31
